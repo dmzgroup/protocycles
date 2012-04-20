@@ -3,7 +3,6 @@ var camera
   , scene
   , renderer
   , objects
-  , mesh
   , loader = new THREE.JSONLoader ()
   , lasttimer = Date.now () * 0.0005
   , axes = [0,0,0,0]
@@ -66,70 +65,76 @@ window.addEventListener ("keyup", function (e) {
    updateAxes ();
 }, false);
 
-}) ();
+var offset = -7.5;
 
-loader.load ('./models/lightcycle-purple.json', function (node) {
+function addModel (node) {
 
-   mesh = new THREE.Mesh (node, new THREE.MeshFaceMaterial ())
+   var mesh = new THREE.Mesh (node, new THREE.MeshFaceMaterial ())
+     ;
 
-   init ();
-   render ();
-
-});
-
-function init () {
-
-   var container = document.createElement ('div');
-   document.body.appendChild (container);
-
-   scene = new THREE.Scene ();
-
-   camera = new THREE.PerspectiveCamera (45, window.innerWidth / window.innerHeight, 1, 2000);
-   camera.position.set (2, 2, 3);
-   scene.add (camera);
-
-   // Grid
-
-   var line_material = new THREE.LineBasicMaterial ({ color: 0xcccccc, opacity: 0.2 }),
-      geometry = new THREE.Geometry (),
-      floor = -0.04, step = 1, size = 14;
-
-   for (var i = 0; i <= size / step * 2; i ++) {
-
-      geometry.vertices.push (new THREE.Vector3 (- size, floor, i * step - size));
-      geometry.vertices.push (new THREE.Vector3 (size, floor, i * step - size));
-
-      geometry.vertices.push (new THREE.Vector3 (i * step - size, floor, -size));
-      geometry.vertices.push (new THREE.Vector3 (i * step - size, floor,  size));
-   }
-
-   var line = new THREE.Line (geometry, line_material, THREE.LinePieces);
-   scene.add (line);
+   mesh.position.x += offset;
+   offset += 3;
 
    scene.add (mesh);
+}
 
-   // Lights
+var container = document.createElement ('div');
+document.body.appendChild (container);
 
-   scene.add (new THREE.AmbientLight (0x1f1f1f));
+scene = new THREE.Scene ();
 
-   var directionalLight = new THREE.DirectionalLight (0xffffff);
-   directionalLight.position.x = 100;
-   directionalLight.position.y = 100;
-   directionalLight.position.z = 0.0;
-   scene.add (directionalLight);
+loader.load ('./models/lightcycle-red.json', addModel);
+loader.load ('./models/lightcycle-orange.json', addModel);
+loader.load ('./models/lightcycle-yellow.json', addModel);
+loader.load ('./models/lightcycle-green.json', addModel);
+loader.load ('./models/lightcycle-blue.json', addModel);
+loader.load ('./models/lightcycle-purple.json', addModel);
+
+camera = new THREE.PerspectiveCamera (45, window.innerWidth / window.innerHeight, 1, 2000);
+camera.position.set (0, 2, 10);
+scene.add (camera);
+
+// Grid
+
+var line_material = new THREE.LineBasicMaterial ({ color: 0xcccccc, opacity: 0.2 }),
+   geometry = new THREE.Geometry (),
+   floor = -0.04, step = 1, size = 14;
+
+for (var i = 0; i <= size / step * 2; i ++) {
+
+   geometry.vertices.push (new THREE.Vector3 (- size, floor, i * step - size));
+   geometry.vertices.push (new THREE.Vector3 (size, floor, i * step - size));
+
+   geometry.vertices.push (new THREE.Vector3 (i * step - size, floor, -size));
+   geometry.vertices.push (new THREE.Vector3 (i * step - size, floor,  size));
+}
+
+var line = new THREE.Line (geometry, line_material, THREE.LinePieces);
+scene.add (line);
 
 
-   directionalLight = new THREE.DirectionalLight (0xffffff);
-   directionalLight.position.x = -100.0;
-   directionalLight.position.y = 100;
-   directionalLight.position.z = 0.0;
-   scene.add (directionalLight);
+// Lights
+
+scene.add (new THREE.AmbientLight (0x1f1f1f));
+
+var directionalLight = new THREE.DirectionalLight (0xffffff);
+directionalLight.position.x = 100;
+directionalLight.position.y = 100;
+directionalLight.position.z = 0.0;
+scene.add (directionalLight);
 
 
-   renderer = new THREE.WebGLRenderer ();
-   renderer.setSize (window.innerWidth, window.innerHeight);
+directionalLight = new THREE.DirectionalLight (0xffffff);
+directionalLight.position.x = -100.0;
+directionalLight.position.y = 100;
+directionalLight.position.z = 0.0;
+scene.add (directionalLight);
 
-   container.appendChild (renderer.domElement);
+
+renderer = new THREE.WebGLRenderer ();
+renderer.setSize (window.innerWidth, window.innerHeight);
+
+container.appendChild (renderer.domElement);
 
 /*
    stats = new Stats ();
@@ -137,8 +142,6 @@ function init () {
    stats.domElement.style.top = '0px';
    container.appendChild (stats.domElement);
 */
-
-}
 
 function render () {
 
@@ -162,3 +165,6 @@ function render () {
 
    lasttimer = timer;
 }
+
+render ();
+}) ();
